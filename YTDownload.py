@@ -5,6 +5,7 @@
 
 from pytube import YouTube, Playlist
 import subprocess
+import threading
 
 
 
@@ -34,7 +35,7 @@ if option == "1":
     YouTubeUrl = input("Enter YouTubeURL: ")
     downloadVideo(YouTubeUrl)
 
-    print("Done")
+    print("Video Download Completed")
 
 elif option == "2":
 
@@ -46,8 +47,21 @@ elif option == "2":
     # show the number of videos contained in the playlist
     print(f"Number of videos in the playlist: {len(playlist.video_urls)}")
 
+    # Method of simply looping through the videos included in the playlist and downloading them one by one
+    # for url in playlist:
+    #     downloadVideo(url)
+
+    # Use threading to enhance the download speed
+    threads = []
     for url in playlist:
-        downloadVideo(url)
+        singleThread = threading.Thread(target=downloadVideo, args=(url, ))
+        singleThread.start()
+        threads.append(singleThread)
+    
+    for thread in threads:
+        thread.join()
+    
+    print("Playlist Download Completed")
 
 else:
     print("Inputted Option Incorrect")
